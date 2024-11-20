@@ -1,0 +1,15 @@
+
+apply from: "$buildGradlePath/build-library-android.gradle"
+ 
+
+dependencies {
+
+    api libs.androidx.appcompat
+    api libs.androidx.viewpager2
+    api libs.androidx.recyclerview
+    api libs.material
+
+    // 图像加载
+    compileOnly libs.coil.kt
+
+}

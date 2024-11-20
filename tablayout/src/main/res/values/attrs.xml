@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tab_item_badge_id" type="id" />
+
+    <declare-styleable name="CustomTabLayout">
+        <attr name="tabTextSize" format="dimension" />
+        <attr name="tabTextFont" format="reference" />
+        <attr name="tabTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+
+        <attr name="tabSelectedTextSize" format="dimension" />
+        <attr name="tabSelectedTextFont" format="reference" />
+        <attr name="tabSelectedTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

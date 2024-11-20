@@ -1,0 +1,9 @@
+
+apply from: "$buildGradlePath/build-demo.gradle"
+
+dependencies {
+    implementation project(":tablayout")
+
+
+    implementation libs.coil.kt
+}
