@@ -19,28 +19,41 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#EEEEEE"
-            app:tabPaddingStart="0dp"
+            app:tabLayoutId="@layout/tablayout_tab_text"
             app:tabPaddingEnd="0dp"
-
-            app:tabTextSize="20sp"
-            app:tabSelectedTextSize="30sp"
-            app:tabTextStyle="italic"
-            app:tabTextColor="@color/purple_200"
+            app:tabPaddingStart="0dp"
             app:tabSelectedTextColor="@color/purple_700"
-            app:tabSelectedTextStyle="italic|bold"
             app:tabSelectedTextFont="@font/crimsonpro_medium"
+            app:tabSelectedTextSize="30sp"
+            app:tabSelectedTextStyle="italic|bold"
+            app:tabTextColor="@color/purple_200"
+            app:tabTextSize="20sp"
 
             />
+
         <me.reezy.cosmo.tablayout.CustomTabLayout
             android:id="@+id/tabs2"
-            android:layout_width="280dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:background="#EEEEEE"
-            app:tabPaddingStart="0dp"
+            app:tabIconAdjustViewBounds="true"
+            app:tabLayoutId="@layout/tablayout_tab_icon"
+            app:tabMinWidth="50dp"
             app:tabPaddingEnd="0dp"
-            />
+            app:tabPaddingStart="0dp" />
 
+
+        <me.reezy.cosmo.tablayout.CustomTabLayout
+            android:id="@+id/tabs3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:background="#EEEEEE"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabSelectedTextColor="@color/purple_700"
+            app:tabTextColor="@color/purple_200" />
     </LinearLayout>
 
 </FrameLayout>

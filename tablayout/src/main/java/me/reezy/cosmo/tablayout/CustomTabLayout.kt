@@ -7,15 +7,12 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -23,7 +20,6 @@ import me.reezy.cosmo.R
 import me.reezy.cosmo.tablayout.ontabselected.OnTabTextFont
 import me.reezy.cosmo.tablayout.ontabselected.OnTabTextSize
 import me.reezy.cosmo.tablayout.utility.CoilImageLoader
-import me.reezy.cosmo.tablayout.utility.DrawableWrapper
 import me.reezy.cosmo.tablayout.utility.ImageLoader
 import kotlin.math.max
 
@@ -31,13 +27,6 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
 
     companion object {
         var imageLoader: ImageLoader = CoilImageLoader()
-
-        val ICON_VIEW_FACTORY_FILL: (TabLayout) -> ImageView = {
-            AppCompatImageView(it.context).apply {
-                scaleType = ImageView.ScaleType.CENTER_CROP
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            }
-        }
     }
 
     private var tabTextSize: Float = 0f
@@ -46,21 +35,20 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
     private var tabSelectedTextSize: Float = 0f
     private var tabSelectedTextTypeface: Typeface? = null
 
-    var textViewFactory: (TabLayout) -> TextView = {
-        AppCompatTextView(context).apply {
-            gravity = Gravity.CENTER
-        }
-    }
+    private var tabLayoutId: Int = 0
 
-    var iconViewFactory: (TabLayout) -> ImageView = {
-        AppCompatImageView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        }
-    }
+
+    private var tabIconScaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
+    private var tabIconAdjustViewBounds: Boolean = false
 
     init {
 
         val a = context.obtainStyledAttributes(attrs, R.styleable.CustomTabLayout)
+
+        tabLayoutId = a.getResourceId(R.styleable.CustomTabLayout_tabLayoutId, R.layout.tablayout_tab_icon_text)
+        tabIconScaleType = ImageView.ScaleType.values()[a.getInt(R.styleable.CustomTabLayout_tabIconScaleType, ImageView.ScaleType.FIT_CENTER.ordinal)]
+        tabIconAdjustViewBounds = a.getBoolean(R.styleable.CustomTabLayout_tabIconAdjustViewBounds, false)
+
         tabTextSize = a.getDimension(R.styleable.CustomTabLayout_tabTextSize, 14f * context.resources.displayMetrics.density)
         tabTextTypeface = a.getTypeface(R.styleable.CustomTabLayout_tabTextFont, R.styleable.CustomTabLayout_tabTextStyle)
 
@@ -76,6 +64,7 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
             addOnTabSelectedListener(OnTabTextFont(tabTextTypeface, tabSelectedTextTypeface))
         }
 
+
         if (isInEditMode) {
             val items = listOf(
                 TabItem("1", "Tab1"),
@@ -84,6 +73,7 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
             )
             setup(items)
         }
+
 
     }
 
@@ -110,81 +100,79 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
     fun setup(tabs: List<TabItem>) {
         removeAllTabs()
         for (item in tabs) {
-            addTab(newTab().setTag(item).setText(item.text).setCustomView(createCustomView(item)))
+            addTab(newTab().setItem(item))
         }
     }
 
 
     fun setup(tabs: List<TabItem>, pager: ViewPager2) {
         TabLayoutMediator(this, pager) { tab, position ->
-            val item = tabs[position]
-            tab.setTag(item).setText(item.text).customView = createCustomView(item)
+            tab.setItem(tabs[position])
         }.attach()
     }
 
 
-    private fun createCustomView(item: TabItem): View? {
-        val view = LinearLayoutCompat(context)
-        view.orientation = LinearLayoutCompat.VERTICAL
-        view.gravity = Gravity.CENTER
-        view.layoutParams = ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    private fun Tab.setItem(item: TabItem): Tab {
+        tag = item
+        text = item.text
+        customView = createCustomView(this, item)
+        return this
+    }
 
-        if (item.hasIcon) {
-            view.addView(iconViewFactory.invoke(this).apply {
-                id = android.R.id.icon1
-                if (item.iconResId > 0) {
-                    setImageResource(item.iconResId)
-                } else {
-                    setImageDrawable(createItemIcon(item, this::requestLayout))
-                }
-            })
+
+    private fun createCustomView(tab: Tab, item: TabItem): View {
+        val custom = LayoutInflater.from(context).inflate(tabLayoutId, tab.view, false)
+
+        custom.findViewById<ImageView>(android.R.id.icon1)?.apply {
+            if (item.hasIcon) {
+                scaleType = tabIconScaleType
+                adjustViewBounds = tabIconAdjustViewBounds
+                loadTabIcon(item, max(item.iconWidth.dp, 0), max(item.iconHeight.dp, 0), ::setImageDrawable)
+            } else {
+                visibility = GONE
+            }
         }
-
-        if (item.hasText) {
-            view.addView(textViewFactory.invoke(this).apply {
-                id = android.R.id.text1
+        custom.findViewById<TextView>(android.R.id.text1)?.apply {
+            if (item.hasText) {
                 setTextColor(tabTextColors)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize)
                 typeface = tabTextTypeface
-            })
-        }
-        return view
-    }
-
-
-    private fun createItemIcon(item: TabItem, onLoaded: () -> Unit): Drawable? {
-        if (item.iconNormal.isNullOrEmpty()) return null
-
-        val width = (max(item.iconWidth, 0) * resources.displayMetrics.density).toInt()
-        val height = (max(item.iconHeight, 0) * resources.displayMetrics.density).toInt()
-
-        if (item.iconActive.isNullOrEmpty()) return createDrawable(item.iconNormal, width, height, onLoaded)
-
-        return StateListDrawable().apply {
-            addState(intArrayOf(android.R.attr.state_selected), createDrawable(item.iconActive, width, height, onLoaded))
-            addState(intArrayOf(), createDrawable(item.iconNormal, width, height, onLoaded))
-        }
-    }
-
-    private fun createDrawable(url: String?, width: Int, height: Int, onLoaded: () -> Unit = {}): Drawable {
-
-        val wrapper = DrawableWrapper(ColorDrawable())
-        imageLoader.load(context.applicationContext, url) {
-            wrapper.wrappedDrawable = it
-            if (width > 0 && height > 0) {
-                wrapper.setBounds(0, 0, width, height)
-            } else if (width > 0) {
-                wrapper.setBounds(0, 0, width, (width * it.intrinsicHeight / it.intrinsicWidth.toFloat()).toInt())
-            } else if (height > 0) {
-                wrapper.setBounds(0, 0, (height * it.intrinsicWidth / it.intrinsicHeight.toFloat()).toInt(), height)
             } else {
-                wrapper.setBounds(0, 0, it.intrinsicWidth, it.intrinsicHeight)
+                visibility = GONE
             }
-            wrapper.invalidateSelf()
-            onLoaded()
         }
-        return wrapper
+        return custom
     }
+
+    private fun loadTabIcon(item: TabItem, width: Int, height: Int, onLoaded: (Drawable) -> Unit) {
+        if (item.iconNormal.isNullOrEmpty()) return
+
+        if (item.iconActive.isNullOrEmpty()) {
+            imageLoader.load(context.applicationContext, item.iconNormal, width, height) {
+                onLoaded(it)
+            }
+        } else {
+            var normal: Drawable? = null
+            var active: Drawable? = null
+
+            imageLoader.load(context.applicationContext, item.iconNormal, width, height) {
+                if (active != null) {
+                    onLoaded(createStateListDrawable(it, active!!))
+                } else {
+                    normal = it
+                }
+            }
+            imageLoader.load(context.applicationContext, item.iconActive, width, height) {
+                if (normal != null) {
+                    onLoaded(createStateListDrawable(normal!!, it))
+                } else {
+                    active = it
+                }
+            }
+        }
+    }
+
+
 
     private fun TypedArray.getTypeface(fontFamilyIndex: Int, textStyleIndex: Int): Typeface? {
         val font = getFont(fontFamilyIndex)
@@ -198,5 +186,12 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
             return Typeface.create(Typeface.DEFAULT, getInt(textStyleIndex, Typeface.NORMAL))
         }
         return null
+    }
+
+    private val Int.dp: Int get() = (this * resources.displayMetrics.density).toInt()
+
+    private fun createStateListDrawable(normal: Drawable, active: Drawable) = StateListDrawable().apply {
+        addState(intArrayOf(android.R.attr.state_selected), active)
+        addState(intArrayOf(), normal)
     }
 }

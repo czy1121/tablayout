@@ -3,6 +3,20 @@
     <item name="tab_item_badge_id" type="id" />
 
     <declare-styleable name="CustomTabLayout">
+        <attr name="tabLayoutId" format="reference" />
+
+        <attr name="tabIconAdjustViewBounds" format="boolean" />
+        <attr name="tabIconScaleType" format="enum">
+            <enum name="matrix" value="0" />
+            <enum name="fitXY" value="1" />
+            <enum name="fitStart" value="2" />
+            <enum name="fitCenter" value="3" />
+            <enum name="fitEnd" value="4" />
+            <enum name="center" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="centerInside" value="7" />
+        </attr>
+
         <attr name="tabTextSize" format="dimension" />
         <attr name="tabTextFont" format="reference" />
         <attr name="tabTextStyle">
@@ -19,4 +33,5 @@
             <flag name="italic" value="2" />
         </attr>
     </declare-styleable>
+
 </resources>
