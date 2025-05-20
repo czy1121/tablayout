@@ -1,6 +1,7 @@
 package me.reezy.cosmo.tablayout
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
@@ -21,6 +22,7 @@ import me.reezy.cosmo.tablayout.ontabselected.OnTabTextFont
 import me.reezy.cosmo.tablayout.ontabselected.OnTabTextSize
 import me.reezy.cosmo.tablayout.utility.CoilImageLoader
 import me.reezy.cosmo.tablayout.utility.ImageLoader
+import me.reezy.cosmo.tablayout.utility.textView
 import kotlin.math.max
 
 class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TabLayout(context, attrs, defStyleAttr) {
@@ -77,6 +79,15 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
 
     }
 
+    override fun setTabTextColors(textColor: ColorStateList?) {
+        super.setTabTextColors(textColor)
+        if (tabTextColors != textColor) {
+            (0 until tabCount).forEach {
+                getTabAt(it)?.textView?.setTextColor(textColor)
+            }
+        }
+    }
+
     fun getTab(name: String): Tab? {
         if (name.isEmpty()) return null
         (0 until tabCount).forEach { i ->
@@ -109,6 +120,10 @@ class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: Attribu
         TabLayoutMediator(this, pager) { tab, position ->
             tab.setItem(tabs[position])
         }.attach()
+    }
+
+    fun setItem(index: Int, item: TabItem) {
+        getTabAt(index)?.setItem(item)
     }
 
 

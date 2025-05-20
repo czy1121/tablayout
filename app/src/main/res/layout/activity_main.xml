@@ -16,12 +16,10 @@
 
         <me.reezy.cosmo.tablayout.CustomTabLayout
             android:id="@+id/tabs"
+            style="@style/CustomTabLayout.Text"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#EEEEEE"
-            app:tabLayoutId="@layout/tablayout_tab_text"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp"
             app:tabSelectedTextColor="@color/purple_700"
             app:tabSelectedTextFont="@font/crimsonpro_medium"
             app:tabSelectedTextSize="30sp"
@@ -33,27 +31,30 @@
 
         <me.reezy.cosmo.tablayout.CustomTabLayout
             android:id="@+id/tabs2"
+            style="@style/CustomTabLayout.Image.Monospace"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            android:background="#EEEEEE"
-            app:tabIconAdjustViewBounds="true"
-            app:tabLayoutId="@layout/tablayout_tab_icon"
-            app:tabMinWidth="50dp"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp" />
-
+            android:background="#EEEEEE"  />
 
         <me.reezy.cosmo.tablayout.CustomTabLayout
             android:id="@+id/tabs3"
+            style="@style/CustomTabLayout.Image"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/purple_200"  />
+
+        <me.reezy.cosmo.tablayout.CustomTabLayout
+            android:id="@+id/tabs4"
+            style="@style/CustomTabLayout.Default"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:background="#EEEEEE"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp"
             app:tabSelectedTextColor="@color/purple_700"
             app:tabTextColor="@color/purple_200" />
+
     </LinearLayout>
 
 </FrameLayout>
