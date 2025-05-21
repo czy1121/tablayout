@@ -23,6 +23,14 @@ dependencies {
 
 ## TabLayout 的一些问题
 
+### tabGravity
+
+- `GRAVITY_FILL` 默认值，所有标签完全填充 `TabLayout`，并平均分配其宽度
+- `GRAVITY_CENTER` 标签在 `TabLayout` 内居中，会使所有标签的宽度与最大标签相同
+  - `largestTabWidth * count > measuredWidth - gutter * 2` 时，切换到 `GRAVITY_FILL`
+- `GRAVITY_START` 说是将标签与 `TabLayout` 的起始位置对齐，实际还是在 `TabLayout` 内居中
+
+
 ### TabLayout 无法动态设置字体大小
 
 TabLayout.TabView 的字体大小只在 app:tabTextAppearance 中设置，就算获取到TabView里的TextView也无法改变字体大小

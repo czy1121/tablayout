@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.demo.app.databinding.ActivityMainBinding
+import me.reezy.cosmo.screenadapt.ScreenAdapt
 import me.reezy.cosmo.tablayout.TabItem
 
 class MainActivity : AppCompatActivity() {
@@ -12,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ScreenAdapt.init(application).setDesignSize(375)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

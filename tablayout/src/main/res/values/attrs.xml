@@ -45,14 +45,11 @@
     <style name="CustomTabLayout.Image" parent="CustomTabLayout.Default">
         <item name="tabLayoutId">@layout/tablayout_tab_icon</item>
         <item name="tabGravity">start</item>
-        <item name="tabMode">fixed</item>
         <item name="tabIconAdjustViewBounds">true</item>
     </style>
+
     <style name="CustomTabLayout.Image.Monospace" parent="CustomTabLayout.Default">
         <item name="tabLayoutId">@layout/tablayout_tab_icon</item>
-        <item name="tabGravity">fill</item>
-        <item name="tabMode">fixed</item>
-        <item name="tabIconScaleType">fitXY</item>
     </style>
     <style name="CustomTabLayout.Text" parent="CustomTabLayout.Default">
         <item name="tabLayoutId">@layout/tablayout_tab_text</item>
